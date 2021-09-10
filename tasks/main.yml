@@ -30,7 +30,8 @@
     group: "{{ iac_group | default(omit) }}"
   no_log: "{{ iac_no_log }}"
   vars:
-    date: "{{ ansible_date_time.iso8601 }}"
+    date: "{{ ansible_date_time.date }}"
+    iso8601: "{{ ansible_date_time.iso8601 }}"
     host: "{{ _iac_ansible_controller_hostname }}"
     uid: "{{ ansible_user_id }}"
   loop: "{{ iac_config_files | selectattr('content', 'defined') | rejectattr('content', 'none') | list }}"
@@ -46,7 +47,8 @@
     group: "{{ iac_group | default(omit) }}"
   no_log: "{{ iac_no_log }}"
   vars:
-    date: "{{ ansible_date_time.iso8601 }}"
+    date: "{{ ansible_date_time.date }}"
+    iso8601: "{{ ansible_date_time.iso8601 }}"
     host: "{{ _iac_ansible_controller_hostname }}"
     uid: "{{ ansible_user_id }}"
   loop: "{{ iac_config_files | selectattr('src', 'defined') | rejectattr('src', 'none') | list }}"

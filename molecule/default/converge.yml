@@ -8,6 +8,7 @@
       vars:
         iac_user: dan
         iac_group: dan
+        iac_no_log: false
         iac_packages:
           - polybar
         iac_config_vars:
