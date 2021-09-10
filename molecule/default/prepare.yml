@@ -1,0 +1,16 @@
+---
+- name: Prepare
+  hosts: all
+  tasks:
+    - name: Create group
+      group:
+        name: dan
+
+    - name: Create user
+      user:
+        name: dan
+        group: dan
+
+    - name: Update the package cache
+      package:
+        update_cache: true

@@ -1,0 +1,36 @@
+galaxy_info:
+  author: dudefellah
+  namespace: dudefellah
+  role_name: iac
+  description: Generic package install and configuration role
+
+  # If the issue tracker for your role is not on github, uncomment the
+  # next line and provide a value
+  issue_tracker_url: https://github.com/dudefellah/issues
+
+  license: GPL-2.0-or-later
+
+  min_ansible_version: 2.9
+
+  # I'm kind of lying about the platforms here since most are untested, but the
+  # role is pretty basic so it should work on most platforms.
+  platforms:
+    - name: Fedora
+      versions:
+        - all
+    - name: EL
+      versions:
+        - all
+    - name: Debian
+      versions:
+        - all
+    - name: Ubuntu
+      versions:
+        - all
+
+  galaxy_tags:
+    - package
+    - configure
+    - install
+
+dependencies: []

@@ -1,0 +1,54 @@
+---
+# tasks file for ansible-role-iac
+- name: Get role facts
+  include_tasks: _iac_gather_facts.yml
+
+- name: Install packages
+  ansible.builtin.package:
+    name: "{{ iac_packages }}"
+    state: present
+  tags:
+    - packages
+
+- name: Create directories
+  file:
+    path: "{{ _iac_root_path }}{{ _iac_dir.path }}"
+    state: directory
+    mode: "{{ _iac_dir.mode | default(iac_default_dir_mode) }}"
+    owner: "{{ iac_user | default(omit) }}"
+    group: "{{ iac_group | default(omit) }}"
+  loop: "{{ iac_directories }}"
+  loop_control:
+    loop_var: _iac_dir
+
+- name: Install config content files
+  copy:
+    content: "{{ _iac_cfg.content }}"
+    dest: "{{ _iac_root_path }}{{ _iac_cfg.dest }}"
+    mode: "{{ _iac_cfg.mode | default(iac_default_mode) }}"
+    owner: "{{ iac_user | default(omit) }}"
+    group: "{{ iac_group | default(omit) }}"
+  no_log: "{{ iac_no_log }}"
+  vars:
+    date: "{{ ansible_date_time.iso8601 }}"
+    host: "{{ _iac_ansible_controller_hostname }}"
+    uid: "{{ ansible_user_id }}"
+  loop: "{{ iac_config_files | selectattr('content', 'defined') | rejectattr('content', 'none') | list }}"
+  loop_control:
+    loop_var: _iac_cfg
+
+- name: Install config template files
+  template:
+    src: "{{ _iac_cfg.src }}"
+    dest: "{{ _iac_root_path }}{{ _iac_cfg.dest }}"
+    mode: "{{ _iac_cfg.mode | default(iac_default_mode) }}"
+    owner: "{{ iac_user | default(omit) }}"
+    group: "{{ iac_group | default(omit) }}"
+  no_log: "{{ iac_no_log }}"
+  vars:
+    date: "{{ ansible_date_time.iso8601 }}"
+    host: "{{ _iac_ansible_controller_hostname }}"
+    uid: "{{ ansible_user_id }}"
+  loop: "{{ iac_config_files | selectattr('src', 'defined') | rejectattr('src', 'none') | list }}"
+  loop_control:
+    loop_var: _iac_cfg

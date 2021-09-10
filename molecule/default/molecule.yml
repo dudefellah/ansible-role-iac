@@ -1,0 +1,17 @@
+---
+dependency:
+  name: galaxy
+driver:
+  name: docker
+lint: |
+  set -e
+  yamllint .
+  ansible-lint
+platforms:
+  - name: iac-molecule-instance-ubuntu-2104
+    image: ubuntu:21.04
+provisioner:
+  name: ansible
+  prepare: prepare.yml
+verifier:
+  name: testinfra

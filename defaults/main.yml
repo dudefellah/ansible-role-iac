@@ -1,0 +1,74 @@
+---
+# defaults file for ansible-role-iac
+#
+# The list of packages to install through this role. By default nothing
+# will be installed
+iac_packages: []
+
+# The iac_user determines ownership of placed files, and may determine the
+# destination path of configured config file paths, if those paths are relative.
+iac_user: null
+
+# This determines deposited file group ownership
+iac_group: null
+
+# Permissions to apply to the installed config files in the absence of a `mode`
+# specified in one of the list entries.
+iac_default_mode: "0600"
+
+# The default permission to apply to a config directory that was created with
+# iac_directories.
+iac_default_dir_mode: "0700"
+
+# By default, we won't log the output of template renderings since they may
+# contain sensitive information.
+iac_no_log: true
+
+# This is a list of directories that you can create in preparation of your
+# config files being created. Each entry has a few values that get passed
+# to `ansible.builtin.file`:
+#
+#   mode: The permissions of the created directory
+#   path: The path of the new directory. This follows the same relative/absolute
+#         path rules as the `iac_config_files`.
+iac_directories: []
+
+# This is a dict of vars to be passed to either the content or template jinja2
+# templates.
+#
+# In your template, you'll have to retrieve these values under the
+# iac_config_vars dict.
+#
+# Eg. {% if iac_config_vars.my_bool %}
+#     something
+#     {% else %}
+#     something else
+#     {% endif %}
+iac_config_vars: {}
+
+# A list configuration files to install. Each list entry should have
+#
+#   dest: This is the destination path of the file. A relative path is given
+#         relative to the iac_user home directory. If iac_user is null, an
+#         error is returned.
+#   content: This is a jinja2 string of contents to deposit into the destination
+#            file.
+#   src: This is a file on the local filesystem to render as a jinja2 template
+#        file on to the remote host.
+#   mode: This is the permissions mode to be applied to the destination file.
+#
+#   Note: one of (and only one of) content or src or template should be
+#         specified per entry.
+iac_config_files: []
+
+# Optionally specify the name of a service to perform an action on as a result
+# of config file changes.
+iac_handler_service_name: null
+
+# If an `iac_handler_service` is specified, then this state will be applied to
+# it through Ansible's `service` module.
+iac_handler_service_state: reloaded
+
+# Separate from the iac_handler_service, you can run a custom command as a
+# handler if a config file has changed.
+iac_handler_command: null

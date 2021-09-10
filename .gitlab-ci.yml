@@ -1,0 +1,25 @@
+---
+stages:
+  - test
+  - publish
+
+include:
+  - remote: "https://gitlab.com/dudefellah/ci-templates/-/raw/master/ansible/Molecule.gitlab-ci.yml"
+  - remote: "https://gitlab.com/dudefellah/ci-templates/-/raw/master/ansible/Galaxy.gitlab-ci.yml"
+
+variables:
+  MYSQL_ROOT_PASSWORD: rt123
+
+molecule:
+  stage: test
+  image: "dudefellah/ansible-molecule:3.2.3"
+  script:
+    - molecule test --all
+  tags:
+    - docker-socket-runner
+
+publish:
+  stage: publish
+  extends: .ansible_galaxy_publish
+  tags:
+    - docker-socket-runner
