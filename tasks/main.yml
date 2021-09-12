@@ -24,7 +24,7 @@
 - name: Install config content files
   copy:
     content: "{{ _iac_cfg.content }}"
-    dest: "{{ _iac_root_path }}{{ _iac_cfg.dest }}"
+    dest: "{% if _iac_cfg.dest.startswith('/') %}{{ _iac_cfg.dest }}{% else %}{{ _iac_root_path }}{{ _iac_cfg.dest }}{% endif %}"
     mode: "{{ _iac_cfg.mode | default(iac_default_mode) }}"
     owner: "{{ iac_user | default(omit) }}"
     group: "{{ iac_group | default(omit) }}"
@@ -41,7 +41,7 @@
 - name: Install config template files
   template:
     src: "{{ _iac_cfg.src }}"
-    dest: "{{ _iac_root_path }}{{ _iac_cfg.dest }}"
+    dest: "{% if _iac_cfg.dest.startswith('/') %}{{ _iac_cfg.dest }}{% else %}{{ _iac_root_path }}{{ _iac_cfg.dest }}{% endif %}"
     mode: "{{ _iac_cfg.mode | default(iac_default_mode) }}"
     owner: "{{ iac_user | default(omit) }}"
     group: "{{ iac_group | default(omit) }}"
