@@ -5,6 +5,10 @@
 # will be installed
 iac_packages: []
 
+# On RedHat-family systems, set this to true to install EPEL before doing other
+# things.
+iac_el_install_epel: false
+
 # The iac_user determines ownership of placed files, and may determine the
 # destination path of configured config file paths, if those paths are relative.
 iac_user: null
@@ -34,7 +38,8 @@ iac_no_log: true
 iac_directories: []
 
 # This is a dict of vars to be passed to either the content or template jinja2
-# templates.
+# templates. It can be overridden by passing 'iac_vars' to your
+# `iac_config_files` list entries.
 #
 # In your template, you'll have to retrieve these values under the
 # iac_config_vars dict.
@@ -56,10 +61,29 @@ iac_config_vars: {}
 #   src: This is a file on the local filesystem to render as a jinja2 template
 #        file on to the remote host.
 #   mode: This is the permissions mode to be applied to the destination file.
+#   vars: If `src` points to a template, the values in this dict will be applied
+#         to that template.
+#
+#         Note: If you're creating your own template, they will appear as
+#         `iac_vars` and not `vars`.
 #
 #   Note: one of (and only one of) content or src or template should be
 #         specified per entry.
 iac_config_files: []
+
+# Optionally specify the name of the service to use when setting the service
+# state (started, stopped, etc). `null` means nothing will happen
+iac_service_name: null
+
+# Set the service state once at the end of the role.
+# If `iac_service_state` or this value are null, the service state won't be
+# affected.
+iac_service_state: null
+
+# Set the service to enabled/disabled at the end of the role.
+# If `iac_service_state` or this value are null, the service won't be enabled/
+# disabled through this role.
+iac_Service_enabled: null
 
 # Optionally specify the name of a service to perform an action on as a result
 # of config file changes.

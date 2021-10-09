@@ -1,0 +1,21 @@
+# {{ ansible_managed }}
+
+{% for (name, section_values) in iac_vars.items() %}
+[{{ name }}]
+{% for k,v in section_values.items() %}
+{% if v is iterable and v is not string %}
+{% for list_entry in v %}
+{{ k }} = {{ list_entry }}
+{% endfor %}
+{% elif v is sameas true %}
+{{ k }} = true
+{% elif v is sameas false %}
+{{ k }} = false
+{% elif v is number %}
+{{ k }} = {{ v }}
+{% else %}
+{{ k }} = {{ v }}
+{% endif %}
+{% endfor %}
+
+{% endfor %}
