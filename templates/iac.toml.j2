@@ -1,0 +1,46 @@
+# {{ ansible_managed }}
+
+{% macro toml_list(toml_list) -%}
+[
+{%- if len(toml_list) > 0 %}
+    {%- if toml_list[0] is string %}"{{ toml_list[0] }}"
+    {% elif toml_list[0] is number %}{{ toml_list[0] }}
+    {%- elif toml_list[0] is iterable %}
+    {{ toml_list(toml_list[0]) }}
+    {%- endif %}
+    {% for entry in toml_list[1:] %}
+    , 
+    {%- if entry is string %}"{{ entry }}"
+    {%- elif entry is number %}{{ entry }}
+    {%- elif entry is iterable %}
+    {{ toml_list(entry) }}
+    {%- endif %}
+    {%- endfor %}
+{%- endif %}
+]
+{%- endmacro %}
+
+{% macro toml(toml_dict, indent='') -%}
+{% for (section_name, section_values) in toml_dict.items() %}
+{{ indent }}[{{ section_name }}]
+{% for (item_name, item_value) in section_values.items() %}
+{% if (item_value is mapping) and (item_value is not string) %}
+{{ indent + '  ' }}{{ toml({item_name: item_value}, indent=indent + '  ') }}
+{% elif (item_value is iterable) and (item_value is not string) %}
+    {{ indent + '  ' }}{{ item_name }} = {{ toml_list(item_value) }}
+{% elif item_value is sameas true %}
+{{ indent + '  ' }}{{ item_name }} = true
+{% elif item_value is sameas false %}
+{{ indent + '  ' }}{{ item_name }} = false
+{% elif item_value is number %}
+{{ indent + '  ' }}{{ item_name }} = {{ item_value }}
+{% else %}
+{{ indent + '  ' }}{{ item_name }} = "{{ item_value }}"
+{% endif %}
+{% endfor %}
+
+{% endfor %}
+{%- endmacro %}
+
+{{ toml(iac_vars) }}
+

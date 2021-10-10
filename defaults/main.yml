@@ -5,6 +5,27 @@
 # will be installed
 iac_packages: []
 
+# If your package install requires some special repositories to be added,
+# declare them here.
+#
+# On RedHat systems, these entries will be passed along to the yum_repositories:
+# module:
+#
+# name, baseurl, name, enbled, gpgcheck, gpgkey, state, description
+#
+# On Debian systems, these entries will be passed to the apt_repository module:
+#
+# repo, state, filename.
+#
+# Additionally, on Debian systems the values: keyserver, id, url, key_state,
+# keyring and key_file will be passed to apt_key, where key_state and key_file
+# will be converted to state and file, respectively.
+#
+# In the interests of simplicity, the apt key will be installed only when a
+# `key_state` value is included in your list entry, so if you intend to install
+# a key, be sure to set that value.
+iac_package_repositories: []
+
 # On RedHat-family systems, set this to true to install EPEL before doing other
 # things.
 iac_el_install_epel: false
@@ -83,7 +104,7 @@ iac_service_state: null
 # Set the service to enabled/disabled at the end of the role.
 # If `iac_service_state` or this value are null, the service won't be enabled/
 # disabled through this role.
-iac_Service_enabled: null
+iac_service_enabled: null
 
 # Optionally specify the name of a service to perform an action on as a result
 # of config file changes.

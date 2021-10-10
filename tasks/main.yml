@@ -8,6 +8,53 @@
     - "iac_el_install_epel|bool"
     - "ansible_os_family == 'RedHat'"
 
+- name: Install dnf/yum repositories
+  ansible.builtin.yum_repository:
+    name: "{{ _iac_repo.name }}"
+    baseurl: "{{ _iac_repo.baseurl }}"
+    enabled: "{{ _iac_repo.enabled | default(true) }}"
+    gpgcheck: "{{ _iac_repo.gpgcheck | default(omit) }}"
+    gpgkey: "{{ _iac_repo.gpgkey | default(omit) }}"
+    description: "{{ _iac_repo.description | default(omit) }}"
+    state: "{{ _iac_repo.state | default('present') }}"
+    sslverify: "{{ _iac_repo.sslverify | default(omit) }}"
+    sslcacert: "{{ _iac_repo.sslcacert | default(omit) }}"
+  loop: "{{ iac_package_repositories | default([]) }}"
+  loop_control:
+    loop_var: _iac_repo
+  when:
+    - "ansible_os_family == 'RedHat'"
+
+- name: Install apt repo keys
+  ansible.builtin.apt_key:
+    keyserver: "{{ _iac_repo.keyserver | default(omit) }}"
+    id: "{{ _iac_repo.id | default(omit) }}"
+    url: "{{ _iac_repo.url | default(omit) }}"
+    state: "{{ _iac_repo.key_state }}"
+    keyring: "{{ _iac_repo.keyring | default(omit) }}"
+    file: "{{ _iac_repo.key_file | default(omit) }}"
+    data: "{{ _iac_repo.key_data | default(omit) }}"
+  loop: >-
+    {{ iac_package_repositories
+       | default([])
+       | selectattr('key_state', 'defined')
+       | list }}
+  loop_control:
+    loop_var: _iac_repo
+  when:
+    - "ansible_os_family == 'Debian'"
+
+- name: Install apt repos
+  ansible.builtin.apt_repository:
+    repo: "{{ _iac_repo.apt_repository }}"
+    state: "{{ _iac_repo.state | default(omit) }}"
+    filename: "{{ _iac_repo.filename | default(omit) }}"
+  loop: "{{ iac_package_repositories | default([]) }}"
+  loop_control:
+    loop_var: _iac_repo
+  when:
+    - "ansible_os_family == 'Debian'"
+
 - name: Install packages
   ansible.builtin.package:
     name: "{{ iac_packages }}"
@@ -41,12 +88,14 @@
     mode: "{{ _iac_cfg.mode | default(iac_default_mode) }}"
     owner: "{{ iac_user | default(omit) }}"
     group: "{{ iac_group | default(omit) }}"
-  no_log: "{{ iac_no_log }}"
+  no_log: "{{ _iac_cfg.no_log | default(iac_no_log) }}"
   vars:
     date: "{{ ansible_date_time.date }}"
     iso8601: "{{ ansible_date_time.iso8601 }}"
     host: "{{ _iac_ansible_controller_hostname }}"
     uid: "{{ ansible_user_id }}"
+  notify:
+    - "iac handle service"
   loop: >-
     {{ iac_config_files
        | selectattr('content', 'defined')
@@ -68,13 +117,15 @@
     owner: "{{ iac_user | default(omit) }}"
     group: "{{ iac_group | default(omit) }}"
     validate: "{{ _iac_cfg.validate | default(omit) }}"
-  no_log: "{{ iac_no_log }}"
+  no_log: "{{ _iac_cfg.no_log | default(iac_no_log) }}"
   vars:
     date: "{{ ansible_date_time.date }}"
     iso8601: "{{ ansible_date_time.iso8601 }}"
     host: "{{ _iac_ansible_controller_hostname }}"
     uid: "{{ ansible_user_id }}"
     iac_vars: "{{ _iac_cfg.vars | default(iac_config_vars) }}"
+  notify:
+    - "iac handle service"
   loop: >-
     {{ iac_config_files
        | selectattr('src', 'defined')

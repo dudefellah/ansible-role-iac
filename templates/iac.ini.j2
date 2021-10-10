@@ -1,21 +1,36 @@
 # {{ ansible_managed }}
 
-{% for (name, section_values) in iac_vars.items() %}
-[{{ name }}]
-{% for k,v in section_values.items() %}
-{% if v is iterable and v is not string %}
-{% for list_entry in v %}
-{{ k }} = {{ list_entry }}
+{% macro ini_values(ini_dict, indent='') -%}
+{% for (item_name, item_value) in dict(ini_dict | dict2items | rejectattr('value', 'mapping') | list | items2dict).items() %}
+{% if (item_value is iterable) and (item_value is not string) %}
+{% for list_entry in item_value %}
+{{ indent }}{{ item_name }} = {{ list_entry }}
 {% endfor %}
-{% elif v is sameas true %}
-{{ k }} = true
-{% elif v is sameas false %}
-{{ k }} = false
-{% elif v is number %}
-{{ k }} = {{ v }}
+{% elif item_value is sameas true %}
+{{ indent }}{{ item_name }} = true
+{% elif item_value is sameas false %}
+{{ indent }}{{ item_name }} = false
+{% elif item_value is number %}
+{{ indent }}{{ item_name }} = {{ item_value }}
 {% else %}
-{{ k }} = {{ v }}
+{{ indent }}{{ item_name }} = "{{ item_value }}"
 {% endif %}
 {% endfor %}
 
+{%- endmacro %}
+
+{% macro ini_section(section_name, section_dict, indent='') -%}
+{{ indent }}[{{ section_name }}]
+{{ indent }}{{ ini_values(section_dict, indent + '  ') }}
+
+{% for (item_name, item_value) in dict(section_dict | dict2items | selectattr('value', 'mapping') | list | items2dict).items() %}
+{{ indent }}{{ ini_section(item_name, item_value, indent=indent + '  ') }}
 {% endfor %}
+
+{%- endmacro %}
+
+{{- ini_values(iac_vars, indent='') }}
+
+{% for (item_name, item_value) in dict(iac_vars | dict2items | selectattr('value', 'mapping') | list | items2dict).items() -%}
+{{ ini_section(item_name, item_value, indent='') }}
+{%- endfor %}
