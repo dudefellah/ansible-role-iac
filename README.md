@@ -56,7 +56,7 @@ that this playbook is untested, but should give an idea on how it works):
 
                     ...
 
-        - name: Intall and configure vdirsyncer
+        - name: Intall and configure polybar
           include_role:
             name: dudefellah.iac
           vars:
