@@ -56,6 +56,9 @@ that this playbook is untested, but should give an idea on how it works):
 
                     ...
 
+Or install polybar for your x11 setup. Validating your .ini file with
+[validini](https://github.com/martinlindhe/validini):
+
         - name: Intall and configure polybar
           include_role:
             name: dudefellah.iac
@@ -70,7 +73,7 @@ that this playbook is untested, but should give an idea on how it works):
                     background: "#222"
                     backgrouind-alt: "#444"
                     ...
-                validate: "valdini %s"
+                validate: "validini %s"
 
 
 License
