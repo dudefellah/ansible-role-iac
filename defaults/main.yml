@@ -63,7 +63,7 @@ iac_directories: []
 # `iac_config_files` list entries.
 #
 # In your template, you'll have to retrieve these values under the
-# iac_config_vars dict.
+# iac_vars dict.
 #
 # Eg. {% if iac_config_vars.my_bool %}
 #     something
