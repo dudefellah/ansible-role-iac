@@ -12,7 +12,7 @@ variables:
 
 molecule:
   stage: test
-  image: "dudefellah/ansible-molecule:3.2.3"
+  image: "dudefellah/ansible-molecule:3.6.1"
   script:
     - molecule test --all
   tags:
