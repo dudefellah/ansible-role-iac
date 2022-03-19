@@ -1,0 +1,4 @@
+# {{ ansible_managed }}
+{% for (_item_name, _item_value) in iac_vars.items() | sort(attribute='0') %}
+{{ _item_name }}={{ _item_value }}
+{% endfor %}

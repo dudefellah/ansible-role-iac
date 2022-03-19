@@ -7,10 +7,13 @@
   listen: "iac handle service"
   when:
     - "iac_handler_service_name is not none"
+    - "iac_handler_service_name|length > 0"
     - "iac_handler_service_state is not none"
+    - "iac_handler_service_state|length > 0"
 
 - name: Run a custom handler
   command: "{{ iac_handler_command }}"
   listen: "iac handle command"
   when:
     - "iac_handler_command is not none"
+    - "iac_handler_command|length > 0"

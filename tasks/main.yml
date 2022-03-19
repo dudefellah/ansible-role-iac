@@ -144,7 +144,9 @@
     state: "{{ iac_service_state }}"
   when:
     - "iac_service_name is not none"
+    - "iac_service_name|length > 0"
     - "iac_service_state is not none"
+    - "iac_service_state|length > 0"
 
 - name: Enable/disable the service
   ansible.builtin.service:
@@ -152,4 +154,6 @@
     enabled: "{{ iac_service_enabled }}"
   when:
     - "iac_service_name is not none"
+    - "iac_service_name|length > 0"
     - "iac_service_enabled is not none"
+    - "iac_service_state|length > 0"

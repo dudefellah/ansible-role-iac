@@ -1,0 +1,18 @@
+# {{ ansible_managed }}
+
+{% macro configobj_section(section_name, section_dict, level=1, maxdepth=5) -%}
+{{ ('[' * level) | join('') }}{{ section_name }}{{ (']' * level) | join('') }}
+{%  for (__item_name, __item_value) in section_dict.items() %}
+{%      if __item_value is mapping %}
+{{          configobj_section(__item_name, __item_value, level=(level+1)) -}}
+{%      elif (__item_value is iterable) and (__item_value is not string) %}
+{{ __item_name }} = {{ __item_value | map('quote') | join(', ') }}
+{%      else %}
+{{ __item_name }} = {{ __item_value | quote }}
+{%      endif %}
+{%  endfor %}
+{%- endmacro %}
+
+{% for (section_name, section_values) in iac_vars.items() %}
+{{  configobj_section(section_name, section_values) }}
+{% endfor %}

@@ -1,0 +1,17 @@
+#
+# {{ ansible_managed }}
+#
+{% macro systemd_section(section_name, section_dict) -%}
+{{  '[' + section_name | capitalize + ']' }}
+{%  for (_item_name, _item_value) in section_dict.items() %}
+{{      _item_name | split('_') | map('capitalize') | join('') }}={{ _item_value | quote }}
+{%  endfor %}
+{% endmacro %}
+
+{%- set _default_service_vars = {'unit': { 'description': 'Systemd service installed from dudefellah.iac' }, 'timer': { 'on_boot_sec': '2m', 'on_boot_active_sec': '5m' }, 'install': { 'wanted_by': 'timers.target' } } -%}
+{%- set _systemd_service = iac_vars | combine(_default_service_vars) -%}
+{% for section in ['unit', 'timer', 'install'] %}
+{%  if section in _systemd_service %}
+{{      systemd_section(section, _systemd_service[section]) }}
+{%  endif %}
+{% endfor %}
