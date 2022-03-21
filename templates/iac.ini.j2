@@ -12,6 +12,8 @@
 {{ indent }}{{ item_name }} = false
 {% elif item_value is number %}
 {{ indent }}{{ item_name }} = {{ item_value }}
+{% elif item_value is none %}
+{{ indent }}{{ item_name }} = null
 {% else %}
 {{ indent }}{{ item_name }} = "{{ item_value }}"
 {% endif %}
